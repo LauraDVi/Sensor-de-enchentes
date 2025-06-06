@@ -1,0 +1,106 @@
+// Adicionando biclioteca LiquidCrystal
+#include <LiquidCrystal_I2C.h>
+
+//Definindo os pinos dos componentes
+//Definindo os pinos do sentor ultrassônico HC-SR04
+const int trigPin = 13; //pino de disparo do sensor
+const int echoPin = 12; //pino de recepção do eco
+
+//Definição dos pinos de alerta
+const int buzzer = 11; //buzzer
+const int greenLED = 10; //led verde
+const int yellowLED = 9; //led amarelo
+const int redLED = 8; //led vermelho
+
+//Variáveis para medição de distância
+long duration; //duração do pulso do eco
+double distance; //distância calculada em cm
+
+//Configuração do display LDC
+LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+// Distância máxima de rederência
+double maxDistanceCM = 30.48; 
+
+//Configuração de pinos de entrada/saída
+void setup()
+{
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);  
+  pinMode(buzzer, OUTPUT);
+  pinMode(greenLED, OUTPUT);
+  pinMode(yellowLED, OUTPUT);
+  pinMode(redLED, OUTPUT);
+
+//Inicialização de todos os dispositicos em estado desligado
+  digitalWrite(buzzer, LOW); 
+  digitalWrite(greenLED, LOW);
+  digitalWrite(yellowLED, LOW);
+  digitalWrite(redLED, LOW);
+  Serial.begin(9600); 
+  lcd.begin(16, 2);   
+  lcd.backlight();
+}
+
+void loop()
+{
+  // Limpa o trigPin
+  digitalWrite(trigPin, LOW);
+  delayMicroseconds(2);
+
+  // Define o trigPin no estado ALTO por 10 microssegundos
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+
+  // Lê o echoPin e retorna o tempo de viagem da onda sonora em microssegundos
+  duration = pulseIn(echoPin, HIGH);
+
+  // Calculando a distância em cm
+  distance = duration * 0.034 / 2;
+
+  // Acenda a luz dependendo da distância
+  if (distance > (maxDistanceCM * 0.66))
+  {
+    digitalWrite(greenLED, HIGH);
+  }
+  else
+  {
+    digitalWrite(greenLED, LOW);
+  }
+
+  if (distance < (maxDistanceCM * 0.66) && distance > (maxDistanceCM * 0.33))
+  {
+    digitalWrite(yellowLED, HIGH);
+  }
+  else
+  {
+    digitalWrite(yellowLED, LOW);
+  }
+
+  if (distance < (maxDistanceCM * 0.33))
+  {
+    digitalWrite(redLED, HIGH);
+    digitalWrite(greenLED, LOW);
+    tone(buzzer, 1000); // Liga o buzzer passivo a 1000 Hz
+  }
+  else
+  {
+    digitalWrite(redLED, LOW);
+    noTone(buzzer); // Desliga o buzzer
+  }
+
+  // "Printa" a distância no LCD e no Monitor Serial
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("Distancia:");
+  lcd.setCursor(0, 1);
+  lcd.print(distance, 1);
+  lcd.print(" cm");
+
+  Serial.print("Distancia: ");
+  Serial.print(distance, 1);
+  Serial.println(" cm");
+
+  delay(200); // Delay para facilitar leitura
+}
