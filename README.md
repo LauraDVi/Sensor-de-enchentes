@@ -66,7 +66,7 @@ Simulação realizada através do Wokwi.
    - O LDC exibindo a distância em cm.
    - Os led's acendendo condorme o nível da água (é possível alterar a sitância do sensor dentro do simulador)
    - O buzzer tocando quando o led vermelho é ativado.
-   - 
+
 > Link direto para o projeto no Wokwi: [https://wokwi.com/projects/432199183495312385](https://wokwi.com/projects/433021166159651841)
 
 > Link do vídeo de simulação do projeto montado com os materiais: https://youtube.com/shorts/aaJSPbpZQcY?si=xv7V4EAsl86TR_oH
